@@ -2,47 +2,85 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const fs = require('fs');
-const PORT = 3000;
-const db = require('./db/db.json');
-const { dirname } = require('node:path');
+const PORT = process.env.PORT || 3000;
+const uniqid = require('uniqid');
 
-// Access to req.body
+// Access
+
+// req.body
 app.use(express.urlencoded({ extended: true }));
-app.use(ecpress.json());
+app.use(express.json());
 
+// public folder
+app.use(express.static(path.join(__dirname, '/public')));
 
-// Access to public folder
-app.use(express.static(path.join(_dirname, '/public')));
-
-
-// Index.js
+// index.js
 app.get('/assets/js/index.js'), function (req, res) {
-  res.sendFile(path.join(_dirname, 'public/assets/js/index.js'))
+  res.sendFile(path.join(__dirname, 'piblic/assets/js/index.js'))
 };
 
-// Index.html
+// index.html
 app.get('*', function (req, res) {
-  res.sendFile(path.join(_dirnmae, 'public/index.html'))
-});
+    res.sendFile(path.join(__dirname, 'public/index.html'))
+  });
 
-// Notes.html
+// notes.html
 app.get('/notes', function (req, res) {
-  res.sendFile(path.join(_dirname, 'public/notes.html'))
+  res.sendFile(path.join(__dirname, 'public/notes.html'))
 });
 
-app.get('api/notes', (req, res) => {
+
+// View saved notes
+app.get('/api/notes', (req, res) => {
   console.log('/api/notesget');
   let json = getJson();
   console.log(json);
   res.json(json);
 })
 
-app.post('api/notes', (req, res) => {
+function getJson() {
+    let data = fs.readFileSync(__dirname + '/db/db.json');
+    let json = JSON.parse(data);
+    return json;
+  };
+
+// Save new notes
+app.post('/api/notes', (req, res) => {
   console.log('/api/notespost');
   console.log(req.body);
+  addNotes(req.body);
   res.json(getJson());
 })
 
+function addNotes(notes) {
+    let json = getJson();
+    let newNotes = notesTemplate(notes);
+    json.push(newNotes);
+    saveNotes(json);
+  };
+
+  function notesTemplate(data) {
+    const uniqueID = uniqueID();
+    let obj = {
+      title: data.title,
+      text: data.text,
+      id: uniqueID,
+    }
+    return obj;
+  };
+
+// Delete saved notes
+app.delete('/api/notes/:id', (req, res) => {
+  let notes = getJson();
+  let newNotes = notes.filter((rmvNotes) => rmvNotes.id !== parseInt(req.params.id));
+  saveNotes(newNotes);
+  res.json(newNotes);
+});
+
+function saveNotes(jsonData) {
+    let data = JSON.stringify(jsonData);
+    fs.writeFileSync(__dirname + '/db/db.json', data);
+  };
 
 // Listener
-app.listen(PORT, () => console.log(`Listening on PORT ${PORT}`));
+app.listen(PORT, () => console.log(`App listening on PORT ${PORT}`));

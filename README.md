@@ -16,8 +16,10 @@ A modern note keeper for today's executive built using Express.js allowing users
 
 ## Screenshots
 
+### Main Page
 ![Main Page](./Assets/main.jpg)
 
+### Notes
 ![Notes](./Assets/notes.jpg)
 
 ## Heroku Demo

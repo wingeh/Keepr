@@ -16,19 +16,12 @@ app.use(express.static(path.join(__dirname, '/public')));
 
 // index.js
 app.get('/assets/js/index.js'), function (req, res) {
-  res.sendFile(path.join(__dirname, 'piblic/assets/js/index.js'))
+  res.sendFile(path.join(__dirname, 'public/assets/js/index.js'))
 };
 
-// index.html
-app.get('*', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public/index.html'))
-  });
-
-// notes.html
-app.get('/notes', function (req, res) {
-  res.sendFile(path.join(__dirname, 'public/notes.html'))
-});
-
+// Routes
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public/index.html')));
+app.get('/notes', (req, res) => res.sendFile(path.join(__dirname, 'public/notes.html')));
 
 // View saved notes
 app.get('/api/notes', (req, res) => {
@@ -60,7 +53,7 @@ function addNotes(notes) {
   };
 
   function notesTemplate(data) {
-    const uniqueID = uniqueID();
+    const uniqueID = uniqid();
     let obj = {
       title: data.title,
       text: data.text,

@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // public folder
-app.use(express.static(path.join(__dirname, '/public')));
+app.use(express.static("public"));
 
 // index.js
 app.get('/assets/js/index.js'), function (req, res) {
